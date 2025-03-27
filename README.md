@@ -13,4 +13,18 @@ This project implements a **hybrid fraud detection system** that combines a fine
 
 ---
 
-Github Repo :- dguha-ctrl/fraud_detection
+
+model/ → Trained models & pipeline
+notebook/ → Training notebook for building pipeline
+scripts/ → Real-time testing script
+data/ → Training dataset
+
+
+---
+
+pip install -r requirements.txt
+
+Contact
+Debapriya Guha
+MSc in Business Analytics – Maynooth University
+Email: debapriya14jis@gmail.com
