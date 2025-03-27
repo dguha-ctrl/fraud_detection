@@ -1,0 +1,9 @@
+pandas
+numpy
+xgboost
+scikit-learn
+joblib
+flask
+pyodbc
+hyperopt
+smtplib
