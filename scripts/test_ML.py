@@ -1,92 +1,41 @@
 import requests
 import pyodbc
 
-# Connect to SQL Server
-conn = pyodbc.connect(
-    'DRIVER={ODBC Driver 17 for SQL Server};'
-    'SERVER=DESKTOP-EPOVRA0\\SQLEXPRESS;'
-    'DATABASE=credit_card;'
-    'Trusted_Connection=yes;'
-    'connection timeout=120;'
-)
-cursor = conn.cursor()
+url = "http://127.0.0.1:5000/predict"
+data = {
+  "transaction_id": "TX_08be31f1",
+  "customer_id": "CUST_48086",
+  "card_number": "5.35219980258509E+15",
+  "merchant_category": "Grocery",
+  "merchant_type": "online",
+  "merchant": "FreshDirect",
+  "amount": 396.170013427734,
+  "currency": "EUR",
+  "country": "France",
+  "city": "Unknown City",
+  "city_size": "medium",
+  "card_type": "Premium Debit",
+  "card_present": True,
+  "device": "NFC Payment",
+  "channel": "pos",
+  "device_fingerprint": "3ff518a9de0ebe4ba43a25d90fd96481",
+  "ip_address": "128.113.54.202",
+  "distance_from_home": 1,
+  "transaction_hour": 0,
+  "weekend_transaction": False,
+  "velocity_last_hour": """{
+    "num_transactions": 251,
+    "total_amount": 10337517.795460586,
+    "unique_merchants": 92,
+    "unique_countries": 12,
+    "max_single_amount": 5372317.654262363
+  }"""
+}
+response = requests.post(url, json=data)
+print(response)
+print(response.json())
 
-# Fetch a transaction where is_fraud is NULL
-cursor.execute("""
-    SELECT TOP 1 
-        transaction_id,
-        customer_id,
-        card_number,
-        merchant_category,
-        merchant_type,
-        merchant,
-        amount,
-        currency,
-        country,
-        city,
-        city_size,
-        card_type,
-        card_present,
-        device,
-        channel,
-        device_fingerprint,
-        ip_address,
-        distance_from_home,
-        transaction_hour,
-        weekend_transaction,
-        velocity_last_hour,
-        is_fraud
-    FROM dbo.credit_card_transact 
-    WHERE date = '2024-09-30' AND is_fraud IS NULL;
-""")
-row = cursor.fetchone()
 
-if row:
-    (
-        transaction_id, customer_id, card_number, merchant_category, merchant_type,
-        merchant, amount, currency, country, city, city_size, card_type,
-        card_present, device, channel, device_fingerprint, ip_address,
-        distance_from_home, transaction_hour, weekend_transaction,
-        velocity_last_hour, is_fraud
-    ) = row
 
-    print(f"🚀 Testing transaction: {transaction_id}")
 
-    api_url = "http://localhost:5000/predict"
-    api_payload = {
-        "transaction_id": transaction_id,
-        "customer_id": customer_id,
-        "card_number": float(card_number),
-        "merchant_category": merchant_category,
-        "merchant_type": merchant_type,
-        "merchant": merchant,
-        "amount": float(amount),
-        "currency": currency,
-        "country": country,
-        "city": city,
-        "city_size": city_size,
-        "card_type": card_type,
-        "card_present": bool(card_present),
-        "device": device,
-        "channel": channel,
-        "device_fingerprint": device_fingerprint,
-        "ip_address": ip_address,
-        "distance_from_home": float(distance_from_home),
-        "transaction_hour": int(transaction_hour),
-        "weekend_transaction": bool(weekend_transaction),
-        "velocity_last_hour": velocity_last_hour,
-        #"date": str(date)
-    }
 
-    response = requests.post(api_url, json=api_payload)
-
-    if response.status_code == 200:
-        result = response.json()
-        print(f"\n Prediction: {'FRAUD' if result['prediction'] == 1 else 'NOT FRAUD'}")
-        print(f"XGBoost Score: {result['xgb_score']:.4f}")
-    else:
-        print(" API Error:", response.text)
-else:
-    print(" No transaction found with is_fraud = NULL.")
-
-conn.close()
