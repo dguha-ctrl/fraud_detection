@@ -1,0 +1,184 @@
+Fraud transaction over time
+
+SELECT
+    Date,
+    COUNT(*) AS fraud_count
+FROM
+    dbo.credit_card_newtble
+WHERE
+    is_fraud = 1 AND LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    Date
+ORDER BY
+    Date;
+
+Fraud transaction by channel
+
+SELECT
+    channel,
+    COUNT(*) AS fraud_count
+FROM
+    dbo.credit_card_newtble
+WHERE
+    is_fraud = 1
+    AND LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    channel
+ORDER BY
+    fraud_count DESC;
+
+Fraud transaction by country
+
+SELECT
+    country,
+    COUNT(*) AS fraud_count
+FROM
+    dbo.credit_card_newtble
+WHERE
+    is_fraud = 1
+    AND LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    country
+ORDER BY
+    fraud_count DESC;
+
+
+
+
+
+
+
+
+
+Distance from home (Fraud vs Non Fraud)
+
+SELECT
+  CASE 
+    WHEN distance_from_home = 0 THEN 'Local'
+    WHEN distance_from_home = 1 THEN 'Abroad'
+    ELSE 'Unknown'
+  END AS distance_label,
+  is_fraud,
+  COUNT(*) AS transaction_count
+FROM
+  dbo.credit_card_newtble
+WHERE
+  LOWER(merchant) IN (
+    'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+    'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+    'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+  )
+GROUP BY
+  CASE 
+    WHEN distance_from_home = 0 THEN 'Local'
+    WHEN distance_from_home = 1 THEN 'Abroad'
+    ELSE 'Unknown'
+  END,
+  is_fraud
+ORDER BY
+  CASE 
+    WHEN distance_from_home = 0 THEN 'Local'
+    WHEN distance_from_home = 1 THEN 'Abroad'
+    ELSE 'Unknown'
+  END;
+
+
+
+
+
+
+
+
+
+
+
+Fraud Transaction by Card Type
+
+
+
+
+SELECT
+    card_type,
+    COUNT(*) AS fraud_count
+FROM
+    dbo.credit_card_newtble
+WHERE
+    is_fraud = 1
+    AND LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    card_type
+ORDER BY
+    fraud_count DESC;
+
+
+
+Fraud Rate by transaction Hour
+
+SELECT
+    transaction_hour,
+    COUNT(*) AS total_transactions,
+    SUM(CASE WHEN is_fraud = 1 THEN 1 ELSE 0 END) AS fraud_transactions,
+    (SUM(CASE WHEN is_fraud = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS fraud_rate
+FROM
+    dbo.credit_card_newtble
+WHERE
+    LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    transaction_hour
+ORDER BY
+    transaction_hour;
+
+
+
+Fraud Transaction by Device
+
+SELECT
+    device,
+    COUNT(*) AS fraud_count
+FROM
+    dbo.credit_card_newtble
+WHERE
+    is_fraud = 1
+    AND LOWER(merchant) IN (
+        'hotels.com', 'kayak', 'lyft', 'holiday inn', 'careem', 'hyatt',
+        'jetblue', 'westin', 'enterprise rent-a-car', 'american airlines',
+        'booking.com', 'sheraton', 'united airlines', 'marriott', 'hilton'
+    )
+GROUP BY
+    device
+ORDER BY
+    fraud_count DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
